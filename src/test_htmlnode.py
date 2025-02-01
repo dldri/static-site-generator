@@ -1,6 +1,8 @@
 import unittest
 
+from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
+from main import *
 
 node = HTMLNode("p", "content", props={"href": "https://boot.dev"})
 node2 = HTMLNode("p", "content", props={"src": "https://image.png"})
@@ -22,6 +24,12 @@ parentnode2 = ParentNode("h3", children_list3, {"href": "https://www.google.com"
 parentnode3 = ParentNode("h1", [parentnode1])
 parentnode4 = ParentNode("h11", [parentnode1, parentnode2, leafnode1, leafnode3])
 parentnode5 = ParentNode("h12", [leafnode1])
+
+text1 = TextNode("text1", TextType.BOLD)
+text2 = TextNode("list2", TextType.LINK, "https://www.boot.dev")
+text3 = TextNode("list3", TextType.TEXT, "https://www.boot.dev")
+italic1 = TextNode("this is italic", TextType.ITALIC, "https://www.boot.dev")
+image1 = TextNode("alt text for image", TextType.IMAGE, "https://image.source")
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
@@ -45,6 +53,19 @@ class TestParentNode(unittest.TestCase):
         print(parentnode3.to_html())
         print(parentnode4.to_html())
         print(parentnode5.to_html())
+
+class TestTextNode(unittest.TestCase):
+    def test_eq(self):
+        print(text1.__repr__())
+        print(text2.__repr__())
+
+    def test_text_node_to_html(self):
+        print(text_node_to_html_node(text1))
+        print(text_node_to_html_node(text2))
+        print(text_node_to_html_node(text3))
+        print(text_node_to_html_node(italic1))
+        print(text_node_to_html_node(image1))
+
 
 
 if __name__ == "__main__":
