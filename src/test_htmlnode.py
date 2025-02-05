@@ -31,6 +31,11 @@ text3 = TextNode("list3", TextType.TEXT, "https://www.boot.dev")
 italic1 = TextNode("this is italic", TextType.ITALIC, "https://www.boot.dev")
 image1 = TextNode("alt text for image", TextType.IMAGE, "https://image.source")
 
+mdnode1 = TextNode("This is a sentence with *bold* word", TextType.TEXT)
+mdnode2 = TextNode("This is a sentence with **italic** word", TextType.TEXT)
+mdnode3 = TextNode("This is a sentence with `code` block", TextType.TEXT)
+mdnode4 = TextNode("This is a sentence with missing `code block", TextType.TEXT)
+
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
         print(node.props_to_html())
@@ -65,6 +70,13 @@ class TestTextNode(unittest.TestCase):
         print(text_node_to_html_node(text3))
         print(text_node_to_html_node(italic1))
         print(text_node_to_html_node(image1))
+
+class TestSplitter(unittest.TestCase):
+    def test_split_nodes_delimiter(self):
+        print(split_nodes_delimiter([mdnode1], "*", TextType.BOLD))
+        print(split_nodes_delimiter([mdnode2], "**", TextType.ITALIC))
+        print(split_nodes_delimiter([mdnode3], "`", TextType.CODE))
+        print(split_nodes_delimiter([mdnode1, mdnode2, mdnode3], "`", TextType.CODE))
 
 
 
