@@ -32,3 +32,59 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     return re.findall(r"\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+
+def split_nodes_image(old_nodes):
+    if not isinstance(old_nodes, list):
+        raise ValueError("Argument passed in not a list.")
+
+    results =[]
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            results.append(node)
+            continue
+        
+        images = extract_markdown_images(node.text)
+        if not images:
+            results.append(node)
+            continue # move to the next node in the loop
+
+        image_alt, image_link = images[0]
+        sections = node.text.split(f"![{image_alt}]({image_link})", 1)
+        if sections[0]:
+            results.append(TextNode(sections[0], TextType.TEXT))
+        results.append(TextNode(image_alt, TextType.IMAGE, image_link))
+        
+        # Recursion to check how many images could be in the original node
+        if sections[1]:
+            remaining_text = TextNode(sections[1], TextType.TEXT)
+            results.extend(split_nodes_image([remaining_text]))
+
+    return results
+
+def split_nodes_link(old_nodes):
+    if not isinstance(old_nodes, list):
+        raise ValueError("Argument passed in not a list.")
+    results =[]
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            results.append(node)
+            continue # move to the next node in the loop
+        
+        links = extract_markdown_links(node.text)
+        if not links:
+            results.append(node)
+            continue # move to the next node in the loop
+
+        link_text, link_url = links[0]
+        sections = node.text.split(f"[{link_text}]({link_url})", 1)
+        if sections[0]:
+          results.append(TextNode(sections[0], TextType.TEXT))
+        results.append(TextNode(link_text, TextType.LINK, link_url))
+        
+        # Recursion to check how many links could be in the original node
+        if sections[1]:
+            remaining_text = TextNode(sections[1], TextType.TEXT)
+            results.extend(split_nodes_link([remaining_text]))
+
+    return results
