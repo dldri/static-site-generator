@@ -4,6 +4,7 @@ from inline_markdown import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
+    markdown_to_blocks,
     extract_markdown_links,
     extract_markdown_images,
 )
@@ -190,7 +191,6 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             nodes,
         )
-
-
-if __name__ == "__main__":
-    unittest.main()
+        
+    if __name__ == "__main__":
+        unittest.main()
