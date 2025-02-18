@@ -1,22 +1,25 @@
 import os
-import  shutil
+import shutil
 from pathlib import Path
 
-#Global Variables
+# Global Variables
 COPY_FROM = "static"
 COPY_TO = "public"
 
-def copy_static():
-    root_contents  = os.listdir()
+
+def delete_public():
+    root_contents = os.listdir()
     if COPY_TO in root_contents:
         print("Public folder exists..")
         print(f"Deleting exisiting '{COPY_TO}' folder..")
         shutil.rmtree(COPY_TO)
         print(f"'{COPY_TO}' folder and its contents have been deleted..")
-    
+
+
+def copy_static():
     print(f"Copying contents from '{COPY_FROM}' folder to '{COPY_TO} folder..")
     print("=====")
-    #Traverse the COPY_FROM folders
+    # Traverse the COPY_FROM folders
     for root, dirs, files in os.walk(COPY_FROM):
         for name in dirs:
             new_directory_path = os.path.join(COPY_TO, name)
