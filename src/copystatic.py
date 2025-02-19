@@ -22,7 +22,8 @@ def copy_static():
     # Traverse the COPY_FROM folders
     for root, dirs, files in os.walk(COPY_FROM):
         for name in dirs:
-            new_directory_path = os.path.join(COPY_TO, name)
+            og_directory_path = os.path.join(root, name)
+            new_directory_path = og_directory_path.replace(COPY_FROM, COPY_TO)
             os.makedirs(new_directory_path)
             print(f"{new_directory_path} folder created")
         for name in files:

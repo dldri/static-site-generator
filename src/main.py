@@ -1,3 +1,4 @@
+import os
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode
 from markdown_blocks import markdown_to_html_node
@@ -33,7 +34,7 @@ def file_write(path: str):
 def main():
     delete_public()
     copy_static()
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 
 def extract_title(markdown):
@@ -48,26 +49,39 @@ def extract_title(markdown):
     raise LookupError("h1 header not found")
 
 
-def generate_page(from_path, template_path, dest_path):
-    print(
-        f"Generating page from {from_path} to {dest_path} using {template_path}")
-
-    with file_read(from_path) as src:
-        src_markdown = src.get("connection").read()
-
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     with file_read(template_path) as template:
         template_content = template.get("connection").read()
 
-    html_content = markdown_to_html_node(src_markdown).to_html()
-    title = extract_title(src_markdown)
+    for root, dirs, files in os.walk(dir_path_content):
+        for name in dirs:  # Crawl folders and create one in destination
+            og_directory_path = os.path.join(root, name)
+            new_directory_path = og_directory_path.replace(
+                dir_path_content, dest_dir_path)
+            os.makedirs(new_directory_path)
+            print(f"{new_directory_path} folder created")
+        for name in files:
+            if name.endswith(".md"):
+                src_path = os.path.join(root, name)
+                dest_path = src_path.replace(
+                    dir_path_content, dest_dir_path).replace("md", "html")
 
-    # Replace placeholders {{ Title }} and {{ Content }}
-    index_html = template_content.replace("{{ Title }}", title)
-    index_html = index_html.replace("{{ Content }}", html_content)
+                with file_read(src_path) as src:
+                    src_markdown = src.get("connection").read()
 
-    # Creates index.html or overwrites exisiting one
-    with file_write(dest_path) as dest:
-        dest.get("connection").write(index_html)
+                html_content = markdown_to_html_node(src_markdown).to_html()
+                title = extract_title(src_markdown)
+
+                # Replace placeholders {{ Title }} and {{ Content }}
+                html_export = template_content.replace("{{ Title }}", title)
+                html_export = html_export.replace(
+                    "{{ Content }}", html_content)
+
+                # Creates index.html or overwrites exisiting one
+                with file_write(dest_path) as dest:
+                    dest.get("connection").write(html_export)
+
+                print(f"{dest_path} generated from {src_path}")
 
 
 main()
