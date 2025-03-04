@@ -4,13 +4,13 @@ from pathlib import Path
 
 # Global Variables
 COPY_FROM = "static"
-COPY_TO = "public"
+COPY_TO = "docs"
 
 
-def delete_public():
+def delete_docs():
     root_contents = os.listdir()
     if COPY_TO in root_contents:
-        print("Public folder exists..")
+        print("Docs folder exists..")
         print(f"Deleting exisiting '{COPY_TO}' folder..")
         shutil.rmtree(COPY_TO)
         print(f"'{COPY_TO}' folder and its contents have been deleted..")

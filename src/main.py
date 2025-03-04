@@ -1,10 +1,11 @@
 import os
+import sys
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode
 from markdown_blocks import markdown_to_html_node
 from copystatic import (
     copy_static,
-    delete_public
+    delete_docs
 )
 from contextlib import contextmanager
 
@@ -32,9 +33,10 @@ def file_write(path: str):
 
 
 def main():
-    delete_public()
+    basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
+    delete_docs()
     copy_static()
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 
 def extract_title(markdown):
@@ -49,7 +51,7 @@ def extract_title(markdown):
     raise LookupError("h1 header not found")
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     with file_read(template_path) as template:
         template_content = template.get("connection").read()
 
@@ -76,6 +78,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 html_export = template_content.replace("{{ Title }}", title)
                 html_export = html_export.replace(
                     "{{ Content }}", html_content)
+                html_export = html_export.replace(
+                    'href="/', f'href="{basepath}')
+                html_export = html_export.replace(
+                    'src="/', f'src="{basepath}')
 
                 # Creates index.html or overwrites exisiting one
                 with file_write(dest_path) as dest:
